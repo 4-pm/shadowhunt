@@ -32,13 +32,13 @@ for images, _ in train_ds.take(1):
 
 plt.show()'''
 
-'''augmented_train_ds = train_ds.map(
-    lambda x, y: (data_augmentation(x, training=True), y))'''
+augmented_train_ds = train_ds.map(
+    lambda x, y: (data_augmentation(x, training=True), y))
 
-'''train_ds = train_ds.map(
+train_ds = train_ds.map(
     lambda img, label: (data_augmentation(img), label),
     num_parallel_calls=tf.data.AUTOTUNE,
-)'''
+)
 # Prefetching samples in GPU memory helps maximize GPU utilization.
 train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
 val_ds = val_ds.prefetch(tf.data.AUTOTUNE)
@@ -95,7 +95,7 @@ keras.utils.plot_model(model)
 
 
 
-epochs = 10
+epochs = 15
 
 callbacks = [
     keras.callbacks.ModelCheckpoint("save_at_{epoch}.keras"),
@@ -112,14 +112,6 @@ model.fit(
     validation_data=val_ds,
 )
 
-model.save(
-    "./model/",
-    overwrite=True,
-    include_optimizer=True,
-    save_format=None,
-    signatures=None,
-    options=None,
-    save_traces=True,
-)
+model.save("./model/model.h5")
 
 
