@@ -3,3 +3,5 @@ keras
 pydot
 pydotplus
 graphviz
+tensorflow_addons
+scikit-image
