@@ -1,13 +1,13 @@
 <annotation>
 	<folder>peoples</folder>
 	<filename>7.jpg</filename>
-	<path>D:\Code\git_synch\handhaltung\data\peoples\7.jpg</path>
+	<path>D:\Leonid\Разобрать\Новая папка\handhaltung\data\peoples\7.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>1440</width>
-		<height>930</height>
+		<width>256</width>
+		<height>256</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
@@ -17,10 +17,22 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>588</xmin>
-			<ymin>7</ymin>
-			<xmax>991</xmax>
-			<ymax>785</ymax>
+			<xmin>22</xmin>
+			<ymin>37</ymin>
+			<xmax>54</xmax>
+			<ymax>202</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>person</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>137</xmin>
+			<ymin>32</ymin>
+			<xmax>208</xmax>
+			<ymax>232</ymax>
 		</bndbox>
 	</object>
 </annotation>

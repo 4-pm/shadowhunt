@@ -1,13 +1,13 @@
 <annotation>
 	<folder>peoples</folder>
-	<filename>5.jpeg</filename>
-	<path>D:\Code\git_synch\handhaltung\data\peoples\5.jpeg</path>
+	<filename>5.jpg</filename>
+	<path>D:\Leonid\Разобрать\Новая папка\handhaltung\data\peoples\5.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>1711</width>
-		<height>1111</height>
+		<width>256</width>
+		<height>256</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
@@ -17,46 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>166</xmin>
-			<ymin>271</ymin>
-			<xmax>467</xmax>
-			<ymax>988</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>person</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>525</xmin>
-			<ymin>259</ymin>
-			<xmax>790</xmax>
-			<ymax>992</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>person</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>873</xmin>
-			<ymin>255</ymin>
-			<xmax>1135</xmax>
-			<ymax>988</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>person</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>1239</xmin>
-			<ymin>257</ymin>
-			<xmax>1502</xmax>
-			<ymax>1015</ymax>
+			<xmin>167</xmin>
+			<ymin>24</ymin>
+			<xmax>198</xmax>
+			<ymax>143</ymax>
 		</bndbox>
 	</object>
 </annotation>
