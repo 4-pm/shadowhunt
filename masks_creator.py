@@ -1,11 +1,13 @@
 import xml.etree.ElementTree as ET
 from PIL import Image, ImageDraw
+import os
 
 
-n = int(input())
+my_path = os.getcwd()
 
-for i in range(n):
-    tree = ET.parse(f'data/xmls/{i + 1}.xml')
+for i in os.listdir(f'{my_path}\data\peoples'):
+    name = i.split('.')[0]
+    tree = ET.parse(f'{my_path}/data/xmls/{name}.xml')
     root = tree.getroot()
 
     maska = Image.new('RGB', (256, 256), 'black')
@@ -17,4 +19,4 @@ for i in range(n):
     for t in range(len(data)):
         idraw.rectangle((int(data[t][0]), int(data[t][1]), int(data[t][2]), int(data[t][3])), fill='white')
 
-    maska.save(f'data/masks/{i + 1}.jpg')
+    maska.save(f'{my_path}/data/masks/{name}.jpg')
