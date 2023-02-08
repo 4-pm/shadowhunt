@@ -5,8 +5,8 @@ import os
 
 my_path = os.getcwd()
 
-for i in os.listdir(f'{my_path}\data\peoples'):
-    name = i.split('.')[0]
+for i in os.listdir(f'{my_path}/data/peoples'):
+    name = i[:-4]
     tree = ET.parse(f'{my_path}/data/xmls/{name}.xml')
     root = tree.getroot()
 

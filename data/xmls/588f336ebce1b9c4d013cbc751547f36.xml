@@ -1,7 +1,7 @@
 <annotation>
 	<folder>peoples</folder>
-	<filename>11.jpg</filename>
-	<path>D:\Leonid\Разобрать\Новая папка\handhaltung\data\peoples\11.jpg</path>
+	<filename>588f336ebce1b9c4d013cbc751547f36.jpg</filename>
+	<path>D:\Leonid\Разобрать\Новая папка\handhaltung\data\peoples\588f336ebce1b9c4d013cbc751547f36.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -14,13 +14,13 @@
 	<object>
 		<name>person</name>
 		<pose>Unspecified</pose>
-		<truncated>0</truncated>
+		<truncated>1</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>70</xmin>
-			<ymin>13</ymin>
-			<xmax>177</xmax>
-			<ymax>238</ymax>
+			<xmin>96</xmin>
+			<ymin>81</ymin>
+			<xmax>195</xmax>
+			<ymax>256</ymax>
 		</bndbox>
 	</object>
 </annotation>

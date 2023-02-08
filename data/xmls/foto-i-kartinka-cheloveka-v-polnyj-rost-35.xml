@@ -1,7 +1,7 @@
 <annotation>
 	<folder>peoples</folder>
-	<filename>11.jpg</filename>
-	<path>D:\Leonid\Разобрать\Новая папка\handhaltung\data\peoples\11.jpg</path>
+	<filename>foto-i-kartinka-cheloveka-v-polnyj-rost-35.jpg</filename>
+	<path>D:\Leonid\Разобрать\Новая папка\handhaltung\data\peoples\foto-i-kartinka-cheloveka-v-polnyj-rost-35.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,10 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>70</xmin>
-			<ymin>13</ymin>
-			<xmax>177</xmax>
-			<ymax>238</ymax>
+			<xmin>93</xmin>
+			<ymin>23</ymin>
+			<xmax>184</xmax>
+			<ymax>232</ymax>
 		</bndbox>
 	</object>
 </annotation>

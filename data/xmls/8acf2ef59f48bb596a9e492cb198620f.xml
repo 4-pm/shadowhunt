@@ -1,0 +1,38 @@
+<annotation>
+	<folder>peoples</folder>
+	<filename>8acf2ef59f48bb596a9e492cb198620f.jpg</filename>
+	<path>D:\Leonid\Разобрать\Новая папка\handhaltung\data\peoples\8acf2ef59f48bb596a9e492cb198620f.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>256</width>
+		<height>256</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>person</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>52</xmin>
+			<ymin>28</ymin>
+			<xmax>100</xmax>
+			<ymax>253</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>person</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>132</xmin>
+			<ymin>7</ymin>
+			<xmax>190</xmax>
+			<ymax>250</ymax>
+		</bndbox>
+	</object>
+</annotation>
