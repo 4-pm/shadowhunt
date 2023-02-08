@@ -6,123 +6,52 @@ from skimage.morphology import dilation, disk
 from skimage.draw import polygon, polygon_perimeter
 from os import walk
 import glob
-import tensorflow as tf
 import numpy as np
 from matplotlib import pyplot as plt
+from functions import *
+import PIL
 
-CLASSES = 1
-COLORS = ['red']
-SAMPLE_SIZE = (256, 256)
-#OUTPUT_SIZE = (1080, 1920)
+def return_mask(image):
+    #frame = imread(frames[i])
+    sample = resize(image, SAMPLE_SIZE)
 
-def input_layer():
-    return tf.keras.layers.Input(shape=SAMPLE_SIZE + (3,))
-
-
-def downsample_block(filters, size, batch_norm=True):
-    initializer = tf.keras.initializers.GlorotNormal()
-
-    result = tf.keras.Sequential()
-
-    result.add(
-        tf.keras.layers.Conv2D(filters, size, strides=2, padding='same',
-                               kernel_initializer=initializer, use_bias=False))
-
-    if batch_norm:
-        result.add(tf.keras.layers.BatchNormalization())
-
-    result.add(tf.keras.layers.LeakyReLU())
-    return result
+    predict = unet_like.predict(sample.reshape((1,) + SAMPLE_SIZE + (3,)))
+    predict = predict.reshape(SAMPLE_SIZE)
+    predict = np.where(predict < 0.1, 1, 0)
+    return predict
 
 
-def upsample_block(filters, size, dropout=False):
-    initializer = tf.keras.initializers.GlorotNormal()
-
-    result = tf.keras.Sequential()
-
-    result.add(
-        tf.keras.layers.Conv2DTranspose(filters, size, strides=2, padding='same',
-                                        kernel_initializer=initializer, use_bias=False))
-
-    result.add(tf.keras.layers.BatchNormalization())
-
-    if dropout:
-        result.add(tf.keras.layers.Dropout(0.25))
-
-    result.add(tf.keras.layers.ReLU())
-    return result
-
-
-def output_layer(size):
-    initializer = tf.keras.initializers.GlorotNormal()
-    return tf.keras.layers.Conv2DTranspose(CLASSES, size, strides=2, padding='same',
-                                           kernel_initializer=initializer, activation='sigmoid')
-
-
-inp_layer = input_layer()
-
-downsample_stack = [
-    downsample_block(64, 4, batch_norm=False),
-    downsample_block(128, 4),
-    downsample_block(256, 4),
-    downsample_block(512, 4),
-    downsample_block(512, 4),
-    downsample_block(512, 4),
-    downsample_block(512, 4),
-]
-
-upsample_stack = [
-    upsample_block(512, 4, dropout=True),
-    upsample_block(512, 4, dropout=True),
-    upsample_block(512, 4, dropout=True),
-    upsample_block(256, 4),
-    upsample_block(128, 4),
-    upsample_block(64, 4)
-]
-
-out_layer = output_layer(4)
-
-# Реализуем skip connections
-x = inp_layer
-
-downsample_skips = []
-
-for block in downsample_stack:
-    x = block(x)
-    downsample_skips.append(x)
-
-downsample_skips = reversed(downsample_skips[:-1])
-
-for up_block, down_block in zip(upsample_stack, downsample_skips):
-    x = up_block(x)
-    x = tf.keras.layers.Concatenate()([x, down_block])
-
-out_layer = out_layer(x)
-
-
+inp_layer, out_layer = create_layers()
 unet_like = tf.keras.Model(inputs=inp_layer, outputs=out_layer)
 unet_like.load_weights('./model/')
 
-#f = [filenames for _, _, filenames in walk("./data/test/")]
+# дальше код для визуализации, все для использовния в реалтайм выше
+# кадры не нужно ресайзить, подаешь фото в виде масива numpy
+
+
 frames = sorted(glob.glob('./data/test/*.jpg'))
-fig, ax = plt.subplots(nrows=2, ncols=5, figsize=(15, 5), dpi=125)
+
 
 for i in range(len(frames)):
-    frame = imread(frames[i])
-    sample = resize(frame, SAMPLE_SIZE)
+    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(10, 3), dpi=125)
+    frame = resize(imread(frames[i]), SAMPLE_SIZE)
+    predict = return_mask(frame)
+    ax[0].imshow(frame)
+    ax[1].imshow(predict, interpolation='nearest')
 
-    predict = unet_like.predict(sample.reshape((1,) + SAMPLE_SIZE + (3,)))
-    predict = predict.reshape(SAMPLE_SIZE + (CLASSES,))
+    dump = np.copy(frame)
+    for i in range(len(dump)):
+        for j in range(len(dump[0])):
+            dump[i][j] = dump[i][j] * predict[i][j]
 
-    ax[0, i].set_title('Image')
-    ax[0, i].set_axis_off()
-    ax[0, i].imshow(frame)
 
-    ax[1, i].set_title('Mask')
-    ax[1, i].set_axis_off()
-    ax[1, i].imshow(predict / 1.5, interpolation='nearest')
-plt.show()
-plt.show()
+
+    ax[2].imshow(dump)
+
+
+
+    plt.show()
+    plt.close()
 
 
 

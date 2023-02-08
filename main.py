@@ -1,17 +1,6 @@
-import os
-import time
 import glob
-import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
-import tensorflow_addons as tfa
-
-from skimage import measure
-from skimage.io import imread, imsave, imshow
-from skimage.transform import resize
-from skimage.filters import gaussian
-from skimage.morphology import dilation, disk
-from skimage.draw import polygon, polygon_perimeter
 
 #print(f'Tensorflow version {tf.__version__}')
 #print(f'GPU is {"ON" if tf.config.list_physical_devices("GPU") else "OFF" }')
@@ -216,6 +205,10 @@ def dice_bce_mc_loss(a, b):
 
 
 unet_like.compile(optimizer='adam', loss=[dice_bce_mc_loss], metrics=[dice_mc_metric])
-history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=25, initial_epoch=0)
+history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=15, initial_epoch=0)
 
 unet_like.save_weights('./model/')
+try:
+    unet_like.save("./model/test_save/model.h5")
+except:
+    print("Cant save h5 format")
