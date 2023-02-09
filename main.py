@@ -205,7 +205,7 @@ def dice_bce_mc_loss(a, b):
 
 
 unet_like.compile(optimizer='adam', loss=[dice_bce_mc_loss], metrics=[dice_mc_metric])
-history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=15, initial_epoch=0)
+history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=20, initial_epoch=0)
 
 unet_like.save_weights('./model/')
 try:
