@@ -5,6 +5,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from functions import *
 import cv2
+from matplotlib import pyplot as plt
+from PIL import Image
+
 
 def return_mask(image):
     #frame = imread(frames[i])
@@ -24,35 +27,40 @@ unet_like.load_weights('./model/')
 # кадры не нужно ресайзить, подаешь фото в виде масcива numpy
 
 cam = cv2.VideoCapture(0)
+hsv_min = np.array((2, 28, 65), np.uint8)
+hsv_max = np.array((26, 238, 255), np.uint8)
 print('ok')
 
-while (True):
-    ret, frame = cam.read()
-    output = cv2.resize(frame, (256, 256))
-    #cv2.imwrite("newimage.png", output)
-    nparray = np.array(output)
-    mask = return_mask(nparray)
-    mask_of_mask = list(zip(*np.where(mask == 1)))
-    if mask_of_mask:
-        x, y, x2, y2 = mask_of_mask[0][0], mask_of_mask[0][1], mask_of_mask[-1][0], mask_of_mask[-1][1]
-    '''
-    for i in range(len(mask)):
-        for j in range(len(mask[i])):
-            if mask[i][j] == 1:
-                x, y = j, i
-                break
-    for i in range(0, len(mask), -1):
-        for j in range(0, len(mask[i]), -1):
-            if mask[i][j] == 1:
-                print(i, j)
-        '''
-    #frame = cv2.flip(frame, 180)
-    frame = cv2.rectangle(frame, (y * 2, x * 2), (y2 * 2, x2 * 2), (255, 0, 0), 3)
 
-    #frame = cv2.resize(frame, (256, 256))
+while (True):
+    _, frame = cam.read()
+    frame = cv2.resize(frame, (256, 256))
+    nparray = np.array(frame)
+    mask = return_mask(nparray)
+    img = []
+    for i in mask:
+        gg = []
+        for x in i:
+            if x == 0:
+                gg.append([0, 0, 0])
+            else:
+                gg.append([255, 255, 255])
+        img.append(gg)
+    img_to_use = np.array(img).astype(np.uint8)
+
+    img_gray = cv2.cvtColor(img_to_use, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY)
+
+    contours, hierarchy = cv2.findContours(image=thresh, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE)
+
+    cv2.drawContours(image=frame, contours=contours, contourIdx=-1, color=(0, 255, 0),
+                     thickness=2, lineType=cv2.LINE_AA)
+    #  contours, hierarchy = cv2.findContours(img_to_use, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    #  cv2.drawContours(frame, contours, -1, (255, 0, 0), 3, cv2.LINE_AA, hierarchy, 1)
     cv2.imshow('frame', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
 
 cam.release()
 cv2.destroyAllWindows()
