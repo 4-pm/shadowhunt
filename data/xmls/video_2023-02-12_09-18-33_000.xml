@@ -1,0 +1,26 @@
+<annotation>
+	<folder>peoples</folder>
+	<filename>video_2023-02-12_09-18-33_000.jpg</filename>
+	<path>D:\Leonid\Разобрать\Новая папка\handhaltung\data\peoples\video_2023-02-12_09-18-33_000.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>256</width>
+		<height>256</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>person</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>66</xmin>
+			<ymin>23</ymin>
+			<xmax>202</xmax>
+			<ymax>218</ymax>
+		</bndbox>
+	</object>
+</annotation>
