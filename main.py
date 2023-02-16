@@ -7,6 +7,8 @@ import tensorflow as tf
 
 SAMPLE_SIZE = (256, 256)
 OUTPUT_SIZE = (1080, 1920)
+EPOCHS = 20
+
 
 
 def load_images(image, mask):
@@ -64,13 +66,14 @@ dataset = dataset.repeat(60)
 
 dataset = dataset.map(augmentate_images, num_parallel_calls=tf.data.AUTOTUNE)
 
-#images_and_masks = list(dataset.take(5))
-#print(len(images_and_masks), "--------- all photos")
+images_and_masks = list(dataset.take(5))
 
-#fig, ax = plt.subplots(nrows=2, ncols=5, figsize=(15, 5), dpi=202)
+t = len(dataset)
+print(t)
+train_dataset = dataset.take(t - 100).cache()
+test_dataset = dataset.skip(t - 100).take(100).cache()
 
-train_dataset = dataset.take(2000).cache()
-test_dataset = dataset.skip(2000).take(100).cache()
+print(len(train_dataset), t)
 
 train_dataset = train_dataset.batch(16)  # поменять на dataset
 test_dataset = test_dataset.batch(16)
@@ -164,6 +167,7 @@ out_layer = out_layer(x)
 
 unet_like = tf.keras.Model(inputs=inp_layer, outputs=out_layer)
 
+
 #tf.keras.utils.plot_model(unet_like, show_shapes=True, dpi=72)
 
 def dice_mc_metric(a, b):
@@ -189,8 +193,15 @@ def dice_mc_loss(a, b):
 def dice_bce_mc_loss(a, b):
     return 0.3 * dice_mc_loss(a, b) + tf.keras.losses.binary_crossentropy(a, b)
 
+model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath="./model/",
+    save_weights_only=True,
+    monitor='val_accuracy',
+    mode='max',
+    save_best_only=True)
+
 
 unet_like.compile(optimizer='adam', loss=[dice_bce_mc_loss], metrics=[dice_mc_metric])
-history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=20, initial_epoch=0)
+history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=EPOCHS, initial_epoch=0, callbacks=[model_checkpoint_callback])
 
 unet_like.save_weights('./model/')
