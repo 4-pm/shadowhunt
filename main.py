@@ -5,8 +5,6 @@ import tensorflow as tf
 #print(f'Tensorflow version {tf.__version__}')
 #print(f'GPU is {"ON" if tf.config.list_physical_devices("GPU") else "OFF" }')
 
-CLASSES = 1
-COLORS = ['red']
 SAMPLE_SIZE = (256, 256)
 OUTPUT_SIZE = (1080, 1920)
 
@@ -26,11 +24,10 @@ def load_images(image, mask):
 
     masks = []
 
-    for i in range(CLASSES):
-        masks.append(tf.where(tf.equal(mask, float(i)), 1.0, 0.0))
+    masks.append(tf.where(tf.equal(mask, float(0)), 1.0, 0.0))
 
-    masks = tf.stack(masks, axis=2)
-    masks = tf.reshape(masks, OUTPUT_SIZE + (CLASSES,))
+    masks = tf.stack(masks, axis=2)  # обьеденяет тензоры
+    masks = tf.reshape(masks, OUTPUT_SIZE + (1,))
 
     return image, masks
 
@@ -56,44 +53,33 @@ images = sorted(glob.glob('./data/peoples/*.jpg'))
 masks = sorted(glob.glob('./data/masks/*.jpg'))
 
 images_dataset = tf.data.Dataset.from_tensor_slices(images)
+
 masks_dataset = tf.data.Dataset.from_tensor_slices(masks)
 
 dataset = tf.data.Dataset.zip((images_dataset, masks_dataset))
 
+
 dataset = dataset.map(load_images, num_parallel_calls=tf.data.AUTOTUNE)
 dataset = dataset.repeat(60)
+
 dataset = dataset.map(augmentate_images, num_parallel_calls=tf.data.AUTOTUNE)
 
-images_and_masks = list(dataset.take(5))
+#images_and_masks = list(dataset.take(5))
+#print(len(images_and_masks), "--------- all photos")
 
-fig, ax = plt.subplots(nrows=2, ncols=5, figsize=(15, 5), dpi=125)
-
-'''for i, (image, masks) in enumerate(images_and_masks):
-    ax[0, i].set_title('Image')
-    ax[0, i].set_axis_off()
-    ax[0, i].imshow(image)
-
-    ax[1, i].set_title('Mask')
-    ax[1, i].set_axis_off()
-    ax[1, i].imshow(image / 1.5)
-
-    for channel in range(CLASSES):
-        contours = measure.find_contours(np.array(masks[:, :, channel]))
-        for contour in contours:
-            ax[1, i].plot(contour[:, 1], contour[:, 0], linewidth=1, color=COLORS[channel])
-
-plt.show()
-plt.close()'''
+#fig, ax = plt.subplots(nrows=2, ncols=5, figsize=(15, 5), dpi=202)
 
 train_dataset = dataset.take(2000).cache()
 test_dataset = dataset.skip(2000).take(100).cache()
 
-train_dataset = train_dataset.batch(16)
+train_dataset = train_dataset.batch(16)  # поменять на dataset
 test_dataset = test_dataset.batch(16)
 
 
+
+
 def input_layer():
-    return tf.keras.layers.Input(shape=SAMPLE_SIZE + (3,))
+    return tf.keras.layers.Input(shape=SAMPLE_SIZE + (3,))  # 256x256x3
 
 
 def downsample_block(filters, size, batch_norm=True):
@@ -132,11 +118,20 @@ def upsample_block(filters, size, dropout=False):
 
 def output_layer(size):
     initializer = tf.keras.initializers.GlorotNormal()
-    return tf.keras.layers.Conv2DTranspose(CLASSES, size, strides=2, padding='same',
+    return tf.keras.layers.Conv2DTranspose(1, size, strides=2, padding='same',
                                            kernel_initializer=initializer, activation='sigmoid')
 
 
 inp_layer = input_layer()
+
+upsample_stack = [
+    upsample_block(512, 4, dropout=True),
+    upsample_block(512, 4, dropout=True),
+    upsample_block(512, 4, dropout=True),
+    upsample_block(256, 4),
+    upsample_block(128, 4),
+    upsample_block(64, 4)
+]
 
 downsample_stack = [
     downsample_block(64, 4, batch_norm=False),
@@ -148,18 +143,9 @@ downsample_stack = [
     downsample_block(512, 4),
 ]
 
-upsample_stack = [
-    upsample_block(512, 4, dropout=True),
-    upsample_block(512, 4, dropout=True),
-    upsample_block(512, 4, dropout=True),
-    upsample_block(256, 4),
-    upsample_block(128, 4),
-    upsample_block(64, 4)
-]
-
 out_layer = output_layer(4)
 
-# Реализуем skip connections
+# skip connection realization
 x = inp_layer
 
 downsample_skips = []
@@ -172,7 +158,7 @@ downsample_skips = reversed(downsample_skips[:-1])
 
 for up_block, down_block in zip(upsample_stack, downsample_skips):
     x = up_block(x)
-    x = tf.keras.layers.Concatenate()([x, down_block])
+    x = tf.keras.layers.Concatenate()([x, down_block])  # connecting layers
 
 out_layer = out_layer(x)
 
@@ -191,7 +177,7 @@ def dice_mc_metric(a, b):
         denomerator = tf.math.reduce_sum(aa + bb) + 1
         dice_summ += numenator / denomerator
 
-    avg_dice = dice_summ / CLASSES
+    avg_dice = dice_summ / 1
 
     return avg_dice
 
@@ -208,7 +194,3 @@ unet_like.compile(optimizer='adam', loss=[dice_bce_mc_loss], metrics=[dice_mc_me
 history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=20, initial_epoch=0)
 
 unet_like.save_weights('./model/')
-try:
-    unet_like.save("./model/test_save/model.h5")
-except:
-    print("Cant save h5 format")
