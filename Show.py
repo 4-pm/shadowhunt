@@ -14,10 +14,10 @@ def return_mask(image):
 
 inp_layer, out_layer = create_layers()
 unet_like = tf.keras.Model(inputs=inp_layer, outputs=out_layer)
-unet_like.load_weights('./model/')
+unet_like.load_weights('./model/model_2_1b/')
 
 #cam = cv2.VideoCapture(0)
-cam = cv2.VideoCapture('3.mp4')
+cam = cv2.VideoCapture('2.mp4')
 hsv_min = np.array((2, 28, 65), np.uint8)
 hsv_max = np.array((26, 238, 255), np.uint8)
 print('ok')

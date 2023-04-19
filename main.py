@@ -1,14 +1,21 @@
 import glob
-import matplotlib.pyplot as plt
 import tensorflow as tf
+import tensorflow_addons as tfa
+import matplotlib.pyplot as plt
+import math
+import numpy as np
 
-#print(f'Tensorflow version {tf.__version__}')
-#print(f'GPU is {"ON" if tf.config.list_physical_devices("GPU") else "OFF" }')
+print(f'Tensorflow version {tf.__version__}')
+print(f'GPU is {"ON" if tf.config.list_physical_devices("GPU") else "OFF"}')
 
 SAMPLE_SIZE = (256, 256)
 OUTPUT_SIZE = (1080, 1920)
 EPOCHS = 20
 
+
+def rotation_augmentation(imgs, fill_value=255, minangle=-12, maxangle=12, deg2rad_factor=3.14159 / 180):
+    radians = tf.random.uniform(([tf.shape(imgs)[0]]), minval=minangle, maxval=maxangle) * deg2rad_factor
+    return tfa.image.rotate(imgs, radians, fill_value=255)
 
 
 def load_images(image, mask):
@@ -35,14 +42,19 @@ def load_images(image, mask):
 
 
 def augmentate_images(image, masks):
-    random_crop = tf.random.uniform((), 0.3, 1)
-    image = tf.image.central_crop(image, random_crop)
-    masks = tf.image.central_crop(masks, random_crop)
+    # random_crop = tf.random.uniform((), 0.3, 1)
+    # image = tf.image.central_crop(image, random_crop)
+    # masks = tf.image.central_crop(masks, random_crop)
 
     random_flip = tf.random.uniform((), 0, 1)
     if random_flip >= 0.5:
         image = tf.image.flip_left_right(image)
         masks = tf.image.flip_left_right(masks)
+
+    radians = tf.random.uniform((), minval=-20, maxval=20) * 3.14159 / 180
+
+    image = tfa.image.rotate(image, radians, fill_mode="nearest")
+    masks = tfa.image.rotate(masks, radians, fill_mode="nearest")
 
     image = tf.image.resize(image, SAMPLE_SIZE)
     masks = tf.image.resize(masks, SAMPLE_SIZE)
@@ -50,9 +62,8 @@ def augmentate_images(image, masks):
     return image, masks
 
 
-
-images = sorted(glob.glob('./data/peoples/*.jpg'))
-masks = sorted(glob.glob('./data/masks/*.jpg'))
+images = sorted(glob.glob('./drive/MyDrive/data/peoples/*.jpg'))
+masks = sorted(glob.glob('./drive/MyDrive/data/masks/*.jpg'))
 
 images_dataset = tf.data.Dataset.from_tensor_slices(images)
 
@@ -60,25 +71,35 @@ masks_dataset = tf.data.Dataset.from_tensor_slices(masks)
 
 dataset = tf.data.Dataset.zip((images_dataset, masks_dataset))
 
-
 dataset = dataset.map(load_images, num_parallel_calls=tf.data.AUTOTUNE)
-dataset = dataset.repeat(60)
+dataset = dataset.repeat(10)
 
 dataset = dataset.map(augmentate_images, num_parallel_calls=tf.data.AUTOTUNE)
 
-images_and_masks = list(dataset.take(5))
+images_and_masks = list(dataset.skip(100).take(10))
+fig, ax = plt.subplots(nrows=2, ncols=10, figsize=(15, 5), dpi=125)
+
+for i, (image, masks) in enumerate(images_and_masks):
+    ax[0, i].set_title('Image')
+    ax[0, i].set_axis_off()
+    ax[0, i].imshow(image)
+
+    ax[1, i].set_title('Mask')
+    ax[1, i].set_axis_off()
+    ax[1, i].imshow(masks / 1.5)
+
+plt.show()
+plt.close()
 
 t = len(dataset)
 print(t)
-train_dataset = dataset.take(t - 100).cache()
+train_dataset = dataset.take(t - 100).cache()  # тут
 test_dataset = dataset.skip(t - 100).take(100).cache()
 
 print(len(train_dataset), t)
 
-train_dataset = train_dataset.batch(16)  # поменять на dataset
-test_dataset = test_dataset.batch(16)
-
-
+train_dataset = train_dataset.batch(4)  # поменять на dataset
+test_dataset = test_dataset.batch(4)
 
 
 def input_layer():
@@ -168,7 +189,7 @@ out_layer = out_layer(x)
 unet_like = tf.keras.Model(inputs=inp_layer, outputs=out_layer)
 
 
-#tf.keras.utils.plot_model(unet_like, show_shapes=True, dpi=72)
+# tf.keras.utils.plot_model(unet_like, show_shapes=True, dpi=72)
 
 def dice_mc_metric(a, b):
     a = tf.unstack(a, axis=3)
@@ -193,6 +214,7 @@ def dice_mc_loss(a, b):
 def dice_bce_mc_loss(a, b):
     return 0.3 * dice_mc_loss(a, b) + tf.keras.losses.binary_crossentropy(a, b)
 
+
 model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath="./model/",
     save_weights_only=True,
@@ -200,8 +222,8 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     mode='max',
     save_best_only=True)
 
-
 unet_like.compile(optimizer='adam', loss=[dice_bce_mc_loss], metrics=[dice_mc_metric])
-history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=EPOCHS, initial_epoch=0, callbacks=[model_checkpoint_callback])
+history_dice = unet_like.fit(train_dataset, validation_data=test_dataset, epochs=EPOCHS, initial_epoch=0,
+                             callbacks=[model_checkpoint_callback])
 
-unet_like.save_weights('./model/')
+unet_like.save('./drive/MyDrive/model_2_1b_10ep/')

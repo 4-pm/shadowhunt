@@ -23,7 +23,7 @@ def return_mask(image):
 
 inp_layer, out_layer = create_layers()
 unet_like = tf.keras.Model(inputs=inp_layer, outputs=out_layer)
-unet_like.load_weights('./model/')
+unet_like.load_weights('./model/model_2_1b/')
 
 # дальше код для визуализации, все для использовния в реалтайм выше
 # кадры не нужно ресайзить, подаешь фото в виде масива numpy
