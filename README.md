@@ -5,7 +5,7 @@ A neural network built on the basis of the convolutional neural network U-Net fo
 To train the model, you should run the file ***main.py***. The dataset is located in the date folder, it was generated manually. The tools for working with the dataset are called ***resizer.py*** and ***mask_creator.py***. to test the network, you can run the ***test.py*** file, and for a real-time test, you need to run ***Show.py***. The trained model is stored in the model folder.
 
 You can download the trained model from the link: https://drive.google.com/drive/folders/1ByMH0K_IVUE4aCRbaOH50WY1-Sgnbarj?usp=drive_link 
-it must be placed in the model folder
+it must be placed in the model folder in the root directory
 
 
 
