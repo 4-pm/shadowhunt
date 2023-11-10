@@ -5,3 +5,4 @@ pydotplus
 graphviz
 tensorflow_addons
 scikit-image
+matplotlib
