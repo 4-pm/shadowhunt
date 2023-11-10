@@ -14,7 +14,7 @@ def return_mask(image):
 
 inp_layer, out_layer = create_layers()
 unet_like = tf.keras.Model(inputs=inp_layer, outputs=out_layer)
-unet_like.load_weights('./model/model_2_1b/')
+unet_like.load_weights('./model/')  # the path to the model
 
 #cam = cv2.VideoCapture(0)
 cam = cv2.VideoCapture('2.mp4')
