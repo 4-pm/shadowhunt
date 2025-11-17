@@ -1,12 +1,11 @@
 # shadowhunt
 
 
-A neural network built on the basis of the convolutional neural network U-Net for localization of people on real time
+Нейронная сеть, построенная на основе сверточной нейронной сети U-Net для локализации людей в реальном времени
 
-To train the model, you should run the file ***main.py***. The dataset is located in the date folder, it was generated manually. The tools for working with the dataset are called ***resizer.py*** and ***mask_creator.py***. to test the network, you can run the ***test.py*** file, and for a real-time test, you need to run ***Show.py***. The trained model is stored in the model folder.
+Для обучения модели необходимо запустить файл **main.py**. Набор данных находится в папке **date**, он был сгенерирован вручную. Инструменты для работы с набором данных называются **resizer.py** и **mask_creator.py**. для тестирования сети вы можете запустить файл **test.py**, а для тестирования в режиме реального времени вам необходимо запустить **Show.py**. Обученная модель хранится в папке **model**.
 
-You can download the trained model from the link: https://drive.google.com/drive/folders/1ByMH0K_IVUE4aCRbaOH50WY1-Sgnbarj?usp=drive_link 
-both files must be placed in the model folder in the root directory
+Вы можете скачать обученную модель по ссылке: https://drive.google.com/drive/folders/1ByMH0K_IVUE4aCRbaOH50WY1-Sgnbarj?usp=drive_link оба файла должны быть помещены в папку model в корневом каталоге
 
 
 
